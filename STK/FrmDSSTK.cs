@@ -188,16 +188,6 @@ namespace STK
 
         }
 
-        private void dataGridView1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
@@ -233,12 +223,7 @@ namespace STK
             
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-           
-        }
-
-         void btnEdit_Click(object sender, EventArgs e)
+        void btnEdit_Click(object sender, EventArgs e)
         {
             var key = dataGridView1.SelectedRows[0].Cells[0].Value;
             var email = GEmail;
@@ -246,7 +231,7 @@ namespace STK
             f.Show();
         }
 
-         void pictureBox1_Click(object sender, EventArgs e)
+        void pictureBox1_Click(object sender, EventArgs e)
         {
             KetNoiCSDL();
             KetNoiCSDLTatToan();
@@ -254,7 +239,7 @@ namespace STK
 
 
         }
-         void TongTien()
+        void TongTien()
         {
 
             SqlConnection cnn = Kn();
@@ -271,13 +256,13 @@ namespace STK
             
         }
 
-         void btnGuiThem_Click(object sender, EventArgs e)
+        void btnGuiThem_Click(object sender, EventArgs e)
         {
             var key = dataGridView1.SelectedRows[0].Cells[0].Value;
             FrmGuiThem f = new FrmGuiThem() { Key = key.ToString() };         
             f.Show();
         }
-         bool getMonth()
+        bool getMonth()
         {
             int month;
             DateTime Time1, Time2;
@@ -369,8 +354,6 @@ namespace STK
                     }
 
                 }
-
-
                 catch
                 {
                     MessageBox.Show("Không tất toán được !");

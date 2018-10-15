@@ -112,7 +112,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1188, 630);
             this.panel1.TabIndex = 2;
-            this.panel1.Click += new System.EventHandler(this.panel1_Click);
             // 
             // testMonth
             // 
@@ -145,9 +144,7 @@
             this.dataGridView1.Size = new System.Drawing.Size(1155, 289);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
-            this.dataGridView1.Click += new System.EventHandler(this.dataGridView1_Click);
             // 
             // ID
             // 
