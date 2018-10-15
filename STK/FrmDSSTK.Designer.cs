@@ -110,7 +110,7 @@
             this.panel1.Location = new System.Drawing.Point(18, 18);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1188, 572);
+            this.panel1.Size = new System.Drawing.Size(1188, 630);
             this.panel1.TabIndex = 2;
             this.panel1.Click += new System.EventHandler(this.panel1_Click);
             // 
@@ -255,7 +255,7 @@
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(1155, 131);
+            this.dataGridView2.Size = new System.Drawing.Size(1155, 180);
             this.dataGridView2.TabIndex = 13;
             // 
             // dataGridViewTextBoxColumn1
@@ -452,7 +452,7 @@
             this.panel2.Controls.Add(this.btnRut1Phan);
             this.panel2.Controls.Add(this.btnGuiThem);
             this.panel2.Controls.Add(this.btnEdit);
-            this.panel2.Location = new System.Drawing.Point(18, 603);
+            this.panel2.Location = new System.Drawing.Point(18, 673);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1188, 78);
@@ -505,14 +505,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkOliveGreen;
-            this.ClientSize = new System.Drawing.Size(1224, 697);
+            this.ClientSize = new System.Drawing.Size(1224, 778);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "FrmDSSTK";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FrmDSSTK";
+            this.Text = "Danh sách sổ tiết kiệm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmDSSTK_FormClosing);
             this.Load += new System.EventHandler(this.FrmDSSTK_Load);
             this.panel1.ResumeLayout(false);

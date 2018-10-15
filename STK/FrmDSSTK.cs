@@ -95,7 +95,7 @@ namespace STK
             // Style for BankName row 
             for(int i =0; i< indexBankNameRow.Count-1; i++)
             {
-                dataGridView1.Rows[indexBankNameRow[i]].DefaultCellStyle.Font = new Font("Tahoma", 10);
+                dataGridView1.Rows[indexBankNameRow[i]].DefaultCellStyle.Font = new Font("Arial", 10);
                 dataGridView1.Rows[indexBankNameRow[i]].DefaultCellStyle.ForeColor = Color.Red;
             }
             // So luong so
@@ -177,10 +177,6 @@ namespace STK
             if (TL == DialogResult.No)
             {
                 e.Cancel = true;
-                Application.Exit();
-                Application.ExitThread();
-                this.Close();
-
             }
         }
 
@@ -439,7 +435,6 @@ namespace STK
                 }
             }
         }
-        public int MyProperty { get; set; }
 
         private void btnRut1Phan_Click(object sender, EventArgs e)
         {
