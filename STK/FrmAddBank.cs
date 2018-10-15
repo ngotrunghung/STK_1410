@@ -20,7 +20,7 @@ namespace STK
         }
         public SqlConnection Kn()
         {
-            return new SqlConnection(@"Data Source = DESKTOP-C213M68\SQLEXPRESS;Initial Catalog = db_Money; Integrated Security = True; Context Connection = False; MultiSubnetFailover=True");
+            return Utilities.getConnect();
         }
         public bool kiemTraMaTrung()
         {
