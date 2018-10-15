@@ -64,7 +64,6 @@
             this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(222, 25);
             this.textBox2.TabIndex = 7;
-            this.textBox2.Click += new System.EventHandler(this.textBox2_Click);
             // 
             // textBox1
             // 
@@ -74,7 +73,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(222, 22);
             this.textBox1.TabIndex = 6;
-            this.textBox1.Click += new System.EventHandler(this.textBox1_Click);
             // 
             // label1
             // 
@@ -85,7 +83,6 @@
             this.label1.Size = new System.Drawing.Size(88, 23);
             this.label1.TabIndex = 5;
             this.label1.Text = "Đăng nhập";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
