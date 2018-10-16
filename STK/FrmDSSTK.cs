@@ -30,7 +30,7 @@ namespace STK
         }
         public void KetNoiCSDL()
         {
-            string sql = "SELECT * FROM NganHang AS A INNER JOIN TheTietKiem AS B ON A.MaNganHang = B.MaNganHang;";
+            string sql = "SELECT * FROM NganHang AS A INNER JOIN TheTietKiem AS B ON A.MaNganHang = B.MaNganHang and B.TatToan = 0;";
             List<NganHang> list = new List<NganHang>();
             using (var connection = Kn())
             {
@@ -234,11 +234,7 @@ namespace STK
 
         void pictureBox1_Click(object sender, EventArgs e)
         {
-            KetNoiCSDL();
-            KetNoiCSDLTatToan();
-            TongTien();
-
-
+            base.OnLoad(e);
         }
         void TongTien()
         {

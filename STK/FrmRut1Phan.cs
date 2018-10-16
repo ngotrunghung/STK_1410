@@ -38,13 +38,14 @@ namespace STK
         int t;
         int soTienGui;
         float laiKhongKyHan;
+        float laiSuat;
         public bool compareMoney()
         {
             try
             {
                 t = int.Parse(txtTienRut.Text);
                 SqlConnection cnn = Kn();
-                string sql = "SELECT SoTienGui, LaiKhongKyHan FROM TheTietKiem WHERE ID = '" + GKey + "'";
+                string sql = "SELECT SoTienGui, LaiKhongKyHan, LaiSuat, Email FROM TheTietKiem WHERE ID = '" + GKey + "'";
                 cnn.Open();
                 SqlCommand cmd = new SqlCommand(sql, cnn);
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -52,6 +53,7 @@ namespace STK
                 {
                     soTienGui = int.Parse(dr[0].ToString());
                     laiKhongKyHan = float.Parse(dr[1].ToString());
+                    laiSuat = float.Parse(dr[2].ToString());
                     if (t > soTienGui)
                     {
                         return false;
@@ -161,25 +163,21 @@ namespace STK
             return 0;
         }
         int a, b;
-        public void Rut()
+        public void Rut(float laiSuat)
         {
             try
             {
                 SqlConnection cnn = Kn();
-                string sql1 = "SELECT SoTienGui FROM TheTietKiem WHERE ID ='" + GKey + "'";
-                cnn.Open();
-                SqlCommand com = new SqlCommand(sql1, cnn);
-                SqlDataReader dr = com.ExecuteReader();
-                if (dr.Read())
-                {
-                    a = int.Parse(dr[0].ToString());
-                    b = a - int.Parse(txtTienRut.Text);
-                }
-                cnn.Close();
+                
+                double tienLai = soTienGui * laiSuat / 100 * getDays() / 360;
                 string sql2 = "UPDATE TheTietKiem SET SoTienGui=@soTienGui Where ID ='" + GKey + "'";
+                string sql3 = "UPDATE TheTietKiem SET TienLai=@tienLai Where ID ='" + GKey + "'";
                 cnn.Open();
                 SqlCommand cmd = new SqlCommand(sql2, cnn);
-                cmd.Parameters.AddWithValue("@soTienGui", float.Parse(b.ToString()));
+                cmd.Parameters.AddWithValue("@soTienGui", (float)(soTienGui - t));
+                cmd.ExecuteNonQuery();
+                cmd = new SqlCommand(sql3, cnn);
+                cmd.Parameters.AddWithValue("@tienLai", (float)tienLai);
                 cmd.ExecuteNonQuery();
                 cnn.Close();
 
@@ -236,7 +234,7 @@ namespace STK
                     }
                     else
                     {
-                        Rut();
+                        Rut(laiKhongKyHan);
                     }
                 }
                 else
@@ -254,7 +252,7 @@ namespace STK
                     }
                     else
                     {
-                        Rut();
+                        Rut(laiSuat);
                     }
                 }
 
