@@ -67,6 +67,7 @@
             this.btnTatToan = new System.Windows.Forms.Button();
             this.btnRut1Phan = new System.Windows.Forms.Button();
             this.btnGuiThem = new System.Windows.Forms.Button();
+            this.Xem = new System.Windows.Forms.DataGridViewButtonColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -246,7 +247,8 @@
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6,
             this.MaNganHang,
-            this.TenNganHang});
+            this.TenNganHang,
+            this.Xem});
             this.dataGridView2.Location = new System.Drawing.Point(16, 437);
             this.dataGridView2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dataGridView2.Name = "dataGridView2";
@@ -254,6 +256,8 @@
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView2.Size = new System.Drawing.Size(1155, 180);
             this.dataGridView2.TabIndex = 13;
+            this.dataGridView2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
+            this.dataGridView2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView2_CellFormatting);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -497,6 +501,12 @@
             this.btnGuiThem.UseVisualStyleBackColor = false;
             this.btnGuiThem.Click += new System.EventHandler(this.btnGuiThem_Click);
             // 
+            // Xem
+            // 
+            this.Xem.HeaderText = "Xem";
+            this.Xem.Name = "Xem";
+            this.Xem.ReadOnly = true;
+            // 
             // FrmDSSTK
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -563,5 +573,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn KyHan;
         private System.Windows.Forms.DataGridViewTextBoxColumn NgayGui;
         private System.Windows.Forms.DataGridViewTextBoxColumn LaiSuat;
+        private System.Windows.Forms.DataGridViewButtonColumn Xem;
     }
 }
