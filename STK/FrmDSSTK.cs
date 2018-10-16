@@ -100,7 +100,6 @@ namespace STK
             }
             // So luong so
             lbnSo.Text = soLuongSo.ToString();
-            dataGridView2.Columns["Xem"].DataPropertyName = "Xem";
         }
         void KetNoiCSDLTatToan()
         {
@@ -435,37 +434,6 @@ namespace STK
                 if (value == 0)
                 {
                     e.Value = string.Empty;
-                    e.FormattingApplied = true;
-                }
-            }
-        }
-
-        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            var senderGrid = (DataGridView)sender;
-            // Neu contentcell la button
-            if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                e.RowIndex >= 0)
-            {
-                string sql = "select t.MaSo , t.SoTienGui ,t.KyHan,t.NgayGui, t.LaiSuat FROM TheTietKiem t Where Email = '" + lbnGetEmail.Text +
-                "' and TatToan = 1 and t.MaSo = '" + dataGridView2.Rows[e.RowIndex].Cells[2].Value.ToString().Trim()+"'";
-
-                using (var connection = Kn())
-                {
-                    var soTietKiem = connection.Query(sql).FirstOrDefault();
-                    DialogResult result = MessageBox.Show(string.Format("Thông tin chi tiết: \n\n - Số tài khoản: {0}\n - Số dư hiện tại: {1}\n - Kỳ hạn gửi: {2}\n - Lãi suất năm: {3}\n - Ngày gửi: {4}", soTietKiem.MaSo, soTietKiem.SoTienGui, soTietKiem.LaiSuat, soTietKiem.KyHan, soTietKiem.NgayGui), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-        }
-
-        private void dataGridView2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (dataGridView2.Columns[e.ColumnIndex].DataPropertyName == "Xem")
-            {
-                int value = Convert.ToInt32(e.Value);
-                if (value == 0)
-                {
-                    e.Value = "Xem";
                     e.FormattingApplied = true;
                 }
             }
