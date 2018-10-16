@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace STK
@@ -20,7 +19,7 @@ namespace STK
         }
         public SqlConnection Kn()
         {
-            return new SqlConnection(@"Data Source = DESKTOP-C213M68\SQLEXPRESS;Initial Catalog = db_Money; Integrated Security = True; Context Connection = False; MultiSubnetFailover=True");
+            return Utilities.getConnect();
         }
         public string Key { get; set; }
 

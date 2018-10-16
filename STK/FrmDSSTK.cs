@@ -7,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data;
 using System.Data.SqlClient;
+using Dapper;
+using STK.Entity;
+using System.Collections;
 
 namespace STK
 {
@@ -17,37 +19,89 @@ namespace STK
         public FrmDSSTK()
         {
             InitializeComponent();
+            TheTietKiems = new List<TheTietKiem>();
         }
-        private string gEmail;
-        public string GEmail
-        {
-            get { return gEmail; }
-            set { gEmail = value; }
-        }
-        private string key;
-        public string Key
-        {
-            get { return key; }
-            set { key = value; }
-        }
+        public string GEmail { get; set; }
+        public string Key { get; set; }
+        private List<TheTietKiem> TheTietKiems { get; set; }
         public SqlConnection Kn()
         {
-            return new SqlConnection(@"Data Source = DESKTOP-C213M68\SQLEXPRESS;Initial Catalog = db_Money; Integrated Security = True; Context Connection = False; MultiSubnetFailover=True");
+            return Utilities.getConnect();
         }
         public void KetNoiCSDL()
         {
-            SqlConnection cnn = Kn();
-            string sql1 = "SELECT ID , MaSo , SoTienGui ,KyHan,NgayGui, LaiSuat FROM TheTietKiem Where Email = '" + lbnGetEmail.Text + "'and TatToan = 'False'  ";
-            cnn.Open();
-            SqlCommand com = new SqlCommand(sql1, cnn);
-            com.CommandType = CommandType.Text;
-            SqlDataAdapter da = new SqlDataAdapter(com);
-            DataTable dt = new DataTable();
-            da.Fill(dt);  // đổ dữ liệu vào kho
-            cnn.Close();  // đóng kết nối
-            dataGridView1.DataSource = dt;
+            string sql = "SELECT * FROM NganHang AS A INNER JOIN TheTietKiem AS B ON A.MaNganHang = B.MaNganHang;";
+            List<NganHang> list = new List<NganHang>();
+            using (var connection = Kn())
+            {
+                var nganHangDictionary = new Dictionary<string, NganHang>();
+
+
+                list = connection.Query<NganHang, TheTietKiem, NganHang>(
+                    sql,
+                    (nganhang, thetietkiem) =>
+                    {
+                        NganHang nganHangEntry;
+
+                        if (!nganHangDictionary.TryGetValue(nganhang.MaNganHang, out nganHangEntry))
+                        {
+                            nganHangEntry = nganhang;
+                            nganHangEntry.TheTietKiems = new List<TheTietKiem>();
+                            nganHangDictionary.Add(nganHangEntry.MaNganHang, nganHangEntry);
+                        }
+
+                        nganHangEntry.TheTietKiems.Add(thetietkiem);
+                        return nganHangEntry;
+                    })
+                .Distinct()
+                .ToList();
+            }
+            // Dinh dang cho gridview giong voi file Yeu cau
+            int soLuongSo = 0;
+            // Lay index cua những row chứa tên ngân hàng để style
+            List<int> indexBankNameRow = new List<int>();
+            // Tên ngân hàng đầu tiên sẽ năm ở row 0 của datagridview
+            indexBankNameRow.Add(0);
+            foreach(NganHang banks in list)
+            {
+                soLuongSo += banks.TheTietKiems.Count;
+                // Tong tien cua moi loai ngan hang
+                double sum = 0;
+                banks.TheTietKiems.ForEach(theTietKiem =>
+                {
+                    sum += theTietKiem.SoTienGui;
+                });
+                // Add ten Ngan hang cho moi nhom
+                TheTietKiems.Add(new TheTietKiem
+                {
+                    MaSo = banks.TenNganHang,
+                    SoTienGui = sum
+                });
+                // Add ngan hang theo group
+                TheTietKiems.AddRange(banks.TheTietKiems);
+                // Add index cua row ten ngan hang
+                indexBankNameRow.Add(indexBankNameRow[indexBankNameRow.Count - 1] + banks.TheTietKiems.Count + 1);
+            }
+            // Fill data into GridView
+            dataGridView1.DataSource = TheTietKiems;
+            // Invisible some columns not being needed
+            dataGridView1.Columns["MaNganHang"].Visible = false;
+            dataGridView1.Columns["KhiDenHan"].Visible = false;
+            dataGridView1.Columns["KhongKyHan"].Visible = false;
+            dataGridView1.Columns["TatToan"].Visible = false;
+            dataGridView1.Columns["TienLai"].Visible = false;
+            dataGridView1.Columns["TraLai"].Visible = false;
+
+            // Style for BankName row 
+            for(int i =0; i< indexBankNameRow.Count-1; i++)
+            {
+                dataGridView1.Rows[indexBankNameRow[i]].DefaultCellStyle.Font = new Font("Arial", 10);
+                dataGridView1.Rows[indexBankNameRow[i]].DefaultCellStyle.ForeColor = Color.Red;
+            }
+            // So luong so
+            lbnSo.Text = soLuongSo.ToString();
         }
-        public void KetNoiCSDLTatToan()
+        void KetNoiCSDLTatToan()
         {
             List<NganHang> list = new List<NganHang>();
             SqlConnection cnn = Kn();
@@ -123,10 +177,6 @@ namespace STK
             if (TL == DialogResult.No)
             {
                 e.Cancel = true;
-                Application.Exit();
-                Application.ExitThread();
-                this.Close();
-
             }
         }
 
@@ -138,50 +188,42 @@ namespace STK
 
         }
 
-        private void dataGridView1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            DataGridViewRow row = new DataGridViewRow();
-            row = dataGridView1.Rows[e.RowIndex];
-            lbnKey.Text = row.Cells[0].Value.ToString();
-            lbnKyHan.Text = row.Cells[3].Value.ToString();
-            if (lbnKyHan.Text=="Không kỳ hạn")
+            try
             {
-                lbnIntKyHan.Text = "0";
-            }
-            else if (lbnKyHan.Text == "1 tháng")
+                DataGridViewRow row = new DataGridViewRow();
+                row = dataGridView1.Rows[e.RowIndex];
+                lbnKey.Text = row.Cells[0].Value.ToString();
+                lbnKyHan.Text = row.Cells[3].Value.ToString();
+                if (lbnKyHan.Text == "Không kỳ hạn")
+                {
+                    lbnIntKyHan.Text = "0";
+                }
+                else if (lbnKyHan.Text == "1 tháng")
+                {
+                    lbnIntKyHan.Text = "1";
+                }
+                else if (lbnKyHan.Text == "3 tháng")
+                {
+                    lbnIntKyHan.Text = "3";
+                }
+                else if (lbnKyHan.Text == "6 tháng")
+                {
+                    lbnIntKyHan.Text = "6";
+                }
+                else if (lbnKyHan.Text == "12 tháng")
+                {
+                    lbnIntKyHan.Text = "12";
+                }
+            } catch (Exception)
             {
-                lbnIntKyHan.Text = "1";
+                return;
             }
-            else if (lbnKyHan.Text == "3 tháng")
-            {
-                lbnIntKyHan.Text = "3";
-            }
-            else if (lbnKyHan.Text == "6 tháng")
-            {
-                lbnIntKyHan.Text = "6";
-            }
-            else if (lbnKyHan.Text == "12 tháng")
-            {
-                lbnIntKyHan.Text = "12";
-            }
+            
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-           
-        }
-
-        private void btnEdit_Click(object sender, EventArgs e)
+        void btnEdit_Click(object sender, EventArgs e)
         {
             var key = dataGridView1.SelectedRows[0].Cells[0].Value;
             var email = GEmail;
@@ -189,7 +231,7 @@ namespace STK
             f.Show();
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
+        void pictureBox1_Click(object sender, EventArgs e)
         {
             KetNoiCSDL();
             KetNoiCSDLTatToan();
@@ -197,7 +239,7 @@ namespace STK
 
 
         }
-        public void TongTien()
+        void TongTien()
         {
 
             SqlConnection cnn = Kn();
@@ -214,13 +256,13 @@ namespace STK
             
         }
 
-        private void btnGuiThem_Click(object sender, EventArgs e)
+        void btnGuiThem_Click(object sender, EventArgs e)
         {
             var key = dataGridView1.SelectedRows[0].Cells[0].Value;
             FrmGuiThem f = new FrmGuiThem() { Key = key.ToString() };         
             f.Show();
         }
-        public bool getMonth()
+        bool getMonth()
         {
             int month;
             DateTime Time1, Time2;
@@ -312,8 +354,6 @@ namespace STK
                     }
 
                 }
-
-
                 catch
                 {
                     MessageBox.Show("Không tất toán được !");
@@ -378,13 +418,25 @@ namespace STK
                 }
             }
         }
-        public int MyProperty { get; set; }
 
         private void btnRut1Phan_Click(object sender, EventArgs e)
         {
             var k = dataGridView1.SelectedRows[0].Cells[0].Value;
             FrmRut1Phan r = new FrmRut1Phan() { GKey = k.ToString()};          
             r.Show();
+        }
+        // Not displaying 0, string.Empty instead.
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dataGridView1.Columns[e.ColumnIndex].DataPropertyName == "LaiSuat")
+            {
+                int value = Convert.ToInt32(e.Value);
+                if (value == 0)
+                {
+                    e.Value = string.Empty;
+                    e.FormattingApplied = true;
+                }
+            }
         }
     }
 }

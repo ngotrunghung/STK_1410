@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace STK
@@ -21,24 +20,8 @@ namespace STK
         }
         public SqlConnection Kn()
         {
-            return new SqlConnection(@"Data Source = DESKTOP-C213M68\SQLEXPRESS;Initial Catalog = db_Money; Integrated Security = True; Context Connection = False; MultiSubnetFailover=True");
+            return Utilities.getConnect();
         }
-       
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void textBox2_Click(object sender, EventArgs e)
-        {
-        }
-
         private void hide_Click(object sender, EventArgs e)
         {
             textBox2.PasswordChar = '*';

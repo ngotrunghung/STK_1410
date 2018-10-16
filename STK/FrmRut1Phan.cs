@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace STK
@@ -31,31 +30,43 @@ namespace STK
         }
         public SqlConnection Kn()
         {
-            return new SqlConnection(@"Data Source = DESKTOP-C213M68\SQLEXPRESS;Initial Catalog = db_Money; Integrated Security = True; Context Connection = False; MultiSubnetFailover=True");
+            return Utilities.getConnect();
         }
         public string GKey { get; set; }
 
 
         int t;
+        int soTienGui;
+        float laiKhongKyHan;
         public bool compareMoney()
         {
-            t = int.Parse(txtTienRut.Text);
-            SqlConnection cnn = Kn();
-            string sql = "SELECT SoTienGui FROM TheTietKiem WHERE ID = '" + GKey + "'";
-            cnn.Open();
-            SqlCommand cmd = new SqlCommand(sql, cnn);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.Read())
+            try
             {
-                int a = int.Parse(dr[0].ToString());
-                if (t > a)
+                t = int.Parse(txtTienRut.Text);
+                SqlConnection cnn = Kn();
+                string sql = "SELECT SoTienGui, LaiKhongKyHan FROM TheTietKiem WHERE ID = '" + GKey + "'";
+                cnn.Open();
+                SqlCommand cmd = new SqlCommand(sql, cnn);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
                 {
-                    return false;
-                }
+                    soTienGui = int.Parse(dr[0].ToString());
+                    laiKhongKyHan = float.Parse(dr[1].ToString());
+                    if (t > soTienGui)
+                    {
+                        return false;
+                    }
+                }               
+            } catch(Exception)
+            {
+                lblMessage.Text = string.Empty;
+                lblMessage.Visible = true;
+                lblMessage.ForeColor = Color.Maroon;
+                lblMessage.Text = "Vui lòng nhập số tiền cần rút.";
             }
             return true;
         }
-        public bool timeSpan()
+        public int getDays()
         {
             DateTime Time1, Time2;
             TimeSpan time;
@@ -64,21 +75,17 @@ namespace STK
             string sql = "SELECT NgayGui FROM TheTietKiem WHERE ID = '" + GKey + "'";
             SqlCommand cm = new SqlCommand(sql, cnn);
             SqlDataReader dr = cm.ExecuteReader(); ;
-
+            int day = 0;
             if (dr.Read())
             {
                 Time1 = Convert.ToDateTime(dr[0].ToString());
                 int a = Time1.Month;
                 Time2 = Convert.ToDateTime(DateTime.Now.ToString());
                 time = Time2.Subtract(Time1);
-                int day = time.Days;
-                if (day < 15)
-                {
-                    return false;
-                }
+                day = time.Days;
             }
             cnn.Close();
-            return true;
+            return day;
         }
         public int gMonth()
         {
@@ -156,7 +163,6 @@ namespace STK
         int a, b;
         public void Rut()
         {
-
             try
             {
                 SqlConnection cnn = Kn();
@@ -181,15 +187,14 @@ namespace STK
                 T = MessageBox.Show("Rút tiền thành công !", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (T == DialogResult.OK)
                 {
-                    this.Close();
+                    Close();
                 }
             }
             catch
             {
-                MessageBox.Show("Rút tiền thất bại !");
+                MessageBox.Show("Rút tiền không thành công !");
             }
         }
-        int x, y, z;
         public void denHan()
         {
             DateTime Time1, Time2;
@@ -217,64 +222,34 @@ namespace STK
                 e.Handled = true;
         }
 
-        public void RutTruocKyHan()
-        {
-            try
-            {
-                SqlConnection cnn = Kn();
-                string sql1 = "SELECT SoTienGui ,LaiKhongKyHan FROM TheTietKiem WHERE ID ='" + GKey + "'";
-                cnn.Open();
-                SqlCommand com = new SqlCommand(sql1, cnn);
-                SqlDataReader dr = com.ExecuteReader();
-                if (dr.Read())
-                {
-                    z = int.Parse(dr[1].ToString());
-                    x = int.Parse(dr[0].ToString());
-                    y = x - (int.Parse(txtTienRut.Text) * z);
-                }
-                cnn.Close();
-                string sql2 = "UPDATE TheTietKiem SET SoTienGui=@soTienGui Where ID ='" + GKey + "'";
-                cnn.Open();
-                SqlCommand cmd = new SqlCommand(sql2, cnn);
-                cmd.Parameters.AddWithValue("@soTienGui", float.Parse(y.ToString()));
-                cmd.ExecuteNonQuery();
-                cnn.Close();
-
-                DialogResult T;
-                T = MessageBox.Show("Rút tiền thành công !", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                if (T == DialogResult.OK)
-                {
-                    this.Close();
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Rút tiền thất bại !");
-            }
-        }
+        
         private void button1_Click(object sender, EventArgs e)
         {
             if (compareMoney() == true)
             {
+                int ngayThucGui = getDays();
                 if (true0KyHan() == true)
                 {
-                    #region a
-                    if (timeSpan() == false)
+                    if (ngayThucGui <= 15)
                     {
-                        MessageBox.Show("Bạn chưa rút được đâu !");
+                        MessageBox.Show("Vui lòng thực hiện sau 15 ngày kể từ ngày gửi !");
                     }
                     else
                     {
                         Rut();
                     }
-                    #endregion
                 }
                 else
                 {
                     if (gMonth() < kiemTraKyHan())
                     {
                         var fx = GKey;
-                        fmrXN f = new fmrXN() {xKey = fx.ToString() };
+                        fmrXN f = new fmrXN() {xKey = fx.ToString(),
+                            tienRut = t,
+                            ngayThucGui = ngayThucGui,
+                            soTienGui = soTienGui,
+                            laiKhongKyHan = laiKhongKyHan
+                        };
                         f.Show();
                     }
                     else
@@ -286,15 +261,9 @@ namespace STK
             }
             else
             {
-                MessageBox.Show("Có đủ tiền đâu mà rút !");
+                MessageBox.Show("Số dư hiện không đủ để thực hiện giao dịch này !");
             }
-            this.Close();
-        }
-
-        public void den_Han()
-        {
-            
-         
+            Close();
         }
     }
 }
